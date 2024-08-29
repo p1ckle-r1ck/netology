@@ -8,7 +8,7 @@ https://github.com/p1ckle-r1ck/shvirtd-example-python
 
 ## Задача 3
 
-Приложение возвращает лолькальный ip address
+Приложение возвращает локальный ip address
 ![alt text](task3_2.png)
 
 
@@ -43,6 +43,6 @@ https://github.com/p1ckle-r1ck/shvirtd-example-python
 
 ## Задача 6.1
 Docker CP
-![alt text](<Снимок экрана от 2024-08-30 00-45-40.png>)
+![alt text](task6.1_1.png)
 
-![alt text](<Снимок экрана от 2024-08-30 00-46-52.png>)
+![alt text](task6.1_2.png)
