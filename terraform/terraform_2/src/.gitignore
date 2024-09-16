@@ -10,5 +10,3 @@
 
 # own secret vars store.
 personal.auto.tfvars
-
-OAuth_token 

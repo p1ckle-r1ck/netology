@@ -32,17 +32,10 @@ variable "vpc_name" {
 }
 
 
-
 ###ssh vars
 
 variable "vms_ssh_root_key" {
   type        = string
   default     = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG5Kzn0xA3mea/L/yEJX4NyNxAD/1HZE79V+HF+1kqP5 marsel.valiev@MacBook-Air-Marsel.local"
   description = "ssh-keygen -t ed25519"
-}
-
-
-variable "vms_ssh_public_key" {
-  type        = string
-  default     = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG5Kzn0xA3mea/L/yEJX4NyNxAD/1HZE79V+HF+1kqP5 marsel.valiev@MacBook-Air-Marsel.local"
 }
