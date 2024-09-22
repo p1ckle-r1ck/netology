@@ -3,11 +3,10 @@ resource "yandex_compute_instance" "database" {
         1 = "main"
         2 = "replica"
     }
-    name = each.key
+    name = each.value
     resources {
-
-        cores  = 2
-        memory = 4
+        cores  = each.value == "main" ? var.each_vm.main.cpu : var.each_vm.replica.cpu
+        memory = each.value == "main" ? var.each_vm.main.ram : var.each_vm.replica.ram
 
     }
 
@@ -19,5 +18,10 @@ resource "yandex_compute_instance" "database" {
     
     network_interface {
         subnet_id = yandex_vpc_subnet.develop.id
+              nat = true
+    }
+    
+    metadata = {
+      ssh-keys           = "ubuntu:${local.ssh-key}"
     }
 }

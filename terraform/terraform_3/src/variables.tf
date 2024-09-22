@@ -41,3 +41,22 @@ variable "count_vm" {
   default = 2
   description = "Колчисетво инстансов"
 }
+
+  variable "each_vm" {
+    type = map(object({  
+        cpu = number
+        ram = number 
+
+    })) 
+    
+    default = {
+        main = {
+          cpu = 2
+          ram = 2
+        } 
+        replica = {
+          cpu = 4
+          ram = 4
+        }    
+    }
+  }
