@@ -1,0 +1,15 @@
+---
+  el:
+    hosts:
+      altlinux:
+        ansible_connection: docker
+  deb:
+    hosts:
+      centos:
+        ansible_connection: docker
+
+  local:
+      hosts:
+        localhost:
+          ansible_connection: local
+        
