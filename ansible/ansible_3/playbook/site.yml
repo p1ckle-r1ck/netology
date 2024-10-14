@@ -1,0 +1,114 @@
+---
+- name: Install Clickhouse
+  hosts: clickhouse
+  handlers:
+    - name: Start clickhouse service
+      become: true
+      ansible.builtin.service:
+        name: clickhouse-server
+        state: restarted
+  tasks:
+    # - block:
+    #     - name: Get clickhouse distrib
+    #       ansible.builtin.get_url:
+    #         url: "https://packages.clickhouse.com/rpm/stable/{{ item }}-{{ clickhouse_version }}.noarch.rpm"
+    #         dest: "./{{ item }}-{{ clickhouse_version }}.rpm"
+    #       with_items: "{{ clickhouse_packages }}"
+    #   rescue:
+    #     - name: Get clickhouse distrib
+    #       ansible.builtin.get_url:
+    #         url: "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-{{ clickhouse_version }}.x86_64.rpm"
+    #         dest: "./clickhouse-common-static-{{ clickhouse_version }}.rpm"
+    - name: Get clickhouse distrib
+      ansible.builtin.get_url:
+        url: https://packages.clickhouse.com/rpm/stable/{{ item }}-{{ clickhouse_version }}.x86_64.rpm
+        dest: ./{{ item }}-{{ clickhouse_version }}.rpm
+        mode: "0600"
+      with_items: "{{ clickhouse_packages }}"
+
+    - name: Install clickhouse packages
+      become: true
+      ansible.builtin.dnf:
+        name:
+          - clickhouse-common-static-{{ clickhouse_version }}.rpm
+          - clickhouse-client-{{ clickhouse_version }}.rpm
+          - clickhouse-server-{{ clickhouse_version }}.rpm
+        disable_gpg_check: true
+
+    - name: Reconfigure clickhouse config
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/clickhouse-server/config.xml
+        insertafter: <!-- <listen_host>::</listen_host> -->
+        line: <listen_host>0.0.0.0</listen_host>
+        state: present
+      notify: Start clickhouse service
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
+    - name: Create database
+      ansible.builtin.command: clickhouse-client -q 'create database logs;'
+      register: create_db
+      failed_when: create_db.rc != 0 and create_db.rc != 82
+      changed_when: create_db.rc == 0
+
+- name: Install Vector
+  hosts: vector
+  handlers:
+    - name: Restart vector service
+      become: true
+      ansible.builtin.service:
+        name: vector
+        state: restarted
+  tasks:
+    - name: Get vector distrib
+      ansible.builtin.get_url:
+        url: https://packages.timber.io/vector/{{ vector_version }}/vector-{{ vector_version }}-1.x86_64.rpm
+        dest: ./vector-{{ vector_version }}-1.x86_64.rpm
+        mode: "0600"
+
+    - name: Install Vector
+      become: true
+      ansible.builtin.dnf:
+        name: ./vector-{{ vector_version }}-1.x86_64.rpm
+        state: present
+        disable_gpg_check: true
+
+    - name: Configuration Vector
+      become: true
+      ansible.builtin.template:
+        src: ./vector.yaml.j2
+        dest: /etc/vector/vector.yaml
+        mode: "0644"
+      notify: Restart vector service
+
+- name: Install LightHouse
+  hosts: lighthouse
+  become: true
+  handlers:
+    - name: Перезапуск  apache2
+      become: true
+      ansible.builtin.service:
+        name: httpd
+        state: restarted
+  tasks:
+    - name: Устанавливаем apache2
+      become: true
+      ansible.builtin.dnf:
+        name:
+          - httpd
+          - unzip
+
+    - name: Скачиваем дистрибутив из github
+      become: true
+      ansible.builtin.unarchive:
+        src: https://github.com/VKCOM/lighthouse/archive/refs/heads/master.zip
+        dest: /var/www/html
+        remote_src: true
+
+    - name: Настраиваем  apache2
+      become: true
+      ansible.builtin.template:
+        src: lighthouse.conf.j2
+        dest: /etc/httpd/conf.d/lighthouse.conf
+        mode: "0644"
+      notify: Перезапуск  apache2
