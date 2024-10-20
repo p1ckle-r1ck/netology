@@ -47,6 +47,6 @@
 
 ### Ответ
 
-[Роль Lighthouse](https://github.com/Kabanitos/lighthouse-role.git)
+[Роль Lighthouse](https://github.com/p1ckle-r1ck/lighthouse-role.git)
 
-[Роль Vector](https://github.com/Kabanitos/vector-role.git)
+[Роль Vector](https://github.com/p1ckle-r1ck/vector-role.git)
