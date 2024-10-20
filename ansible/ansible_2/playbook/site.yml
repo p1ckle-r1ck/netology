@@ -11,22 +11,27 @@
     - block:
         - name: Get clickhouse distrib
           ansible.builtin.get_url:
-            url: "https://packages.clickhouse.com/rpm/stable/{{ item }}-{{ clickhouse_version }}.noarch.rpm"
-            dest: "./{{ item }}-{{ clickhouse_version }}.rpm"
+            url: "https://packages.clickhouse.com/rpm/stable/{{ item }}-{{ clickhouse_version }}.aarch64.rpm"
+            dest: "./{{ item }}-{{ clickhouse_version }}.aarch64.rpm"
           with_items: "{{ clickhouse_packages }}"
       rescue:
         - name: Get clickhouse distrib
           ansible.builtin.get_url:
-            url: "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-{{ clickhouse_version }}.x86_64.rpm"
-            dest: "./clickhouse-common-static-{{ clickhouse_version }}.rpm"
-    - name: Install clickhouse packages
-      become: true
-      ansible.builtin.yum:
-        name:
-          - clickhouse-common-static-{{ clickhouse_version }}.rpm
-          - clickhouse-client-{{ clickhouse_version }}.rpm
-          - clickhouse-server-{{ clickhouse_version }}.rpm
-      notify: Start clickhouse service
+            url: "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-22.3.10.22.aarch64.rpm"
+            dest: "./clickhouse-common-static-22.3.10.22.aarch64.rpm"
+    # - name: Install clickhouse packages
+    #   become: true
+    #   ansible.builtin.dnf:
+    #     name:
+    #       - clickhouse-common-static-22.3.10.22.aarch64.rpm
+
+    # - name: Install clickhouse packages-2 
+    #   become: true
+    #   ansible.builtin.dnf:
+    #     name:
+    #       - clickhouse-client-{{ clickhouse_version }}.rpm
+    #       - clickhouse-server-{{ clickhouse_version }}.rpm
+    #   notify: Start clickhouse service
     - name: Flush handlers
       meta: flush_handlers
     - name: Create database

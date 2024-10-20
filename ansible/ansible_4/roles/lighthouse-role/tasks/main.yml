@@ -1,0 +1,22 @@
+---
+- name: Устанавливаем apache2
+  become: true
+  ansible.builtin.dnf:
+    name:
+      - httpd
+      - unzip
+
+- name: Скачиваем дистрибутив из github
+  become: true
+  ansible.builtin.unarchive:
+    src: https://github.com/VKCOM/lighthouse/archive/refs/heads/master.zip
+    dest: /var/www/html
+    remote_src: true
+
+- name: Настраиваем  apache2
+  become: true
+  ansible.builtin.template:
+    src: lighthouse.conf.j2
+    dest: /etc/httpd/conf.d/lighthouse.conf
+    mode: "0644"
+  notify: Перезапуск  apache2
